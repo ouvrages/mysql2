@@ -1210,24 +1210,6 @@ static VALUE initialize_ext(VALUE self) {
 }
 
 void init_mysql2_client() {
-  /* verify the libmysql we're about to use was the version we were built against
-     https://github.com/luislavena/mysql-gem/commit/a600a9c459597da0712f70f43736e24b484f8a99 */
-  int i;
-  int dots = 0;
-  const char *lib = mysql_get_client_info();
-
-  for (i = 0; lib[i] != 0 && MYSQL_LINK_VERSION[i] != 0; i++) {
-    if (lib[i] == '.') {
-      dots++;
-              /* we only compare MAJOR and MINOR */
-      if (dots == 2) break;
-    }
-    if (lib[i] != MYSQL_LINK_VERSION[i]) {
-      rb_raise(rb_eRuntimeError, "Incorrect MySQL client library version! This gem was compiled for %s but the client library is %s.", MYSQL_LINK_VERSION, lib);
-      return;
-    }
-  }
-
   /* Initializing mysql library, so different threads could call Client.new */
   /* without race condition in the library */
   if (mysql_library_init(0, NULL, NULL) != 0) {
